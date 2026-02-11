@@ -45,25 +45,11 @@ From there, open the app on your preferred target:
 - Press `a` for Android Emulator
 - Scan the QR code with Expo Go on a physical device
 
-### Microcontroller Setup
-
-The insulin pump simulator runs on an [M5Stack Tab5](https://www.amazon.com/dp/B0FHVKV21Y) IoT controller (ESP32-P4). It receives bolus delivery commands from the Spring Boot API and confirms successful delivery back to the app. Refer to the `/microcontroller` directory for firmware and pairing instructions.
-
-### Reset Project
-
-To start with a clean slate:
-
-```bash
-npm run reset-project
-```
-
-This moves starter code to `app-example/` and creates a fresh `app/` directory.
-
 ## Team
 
 - Ryan Stoffel (Team Lead)
+- Payton Henry (Project Lead)
 - Micah Suk
-- Payton Henry
 - Mili Anderson
 - Elijah Tabor
 
