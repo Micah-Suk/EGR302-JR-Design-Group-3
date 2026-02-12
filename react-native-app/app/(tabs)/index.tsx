@@ -1,37 +1,40 @@
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { db } from "../../config/firebase";
+import { GlucoseCard } from "@/components/dashboard/glucose-card";
+import { QuickActions } from "@/components/dashboard/quick-actions";
+import { RecentMealsCard } from "@/components/dashboard/recent-meals-card";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { ScrollView, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function FirebaseTest() {
-  const [status, setStatus] = useState("Testing connection...");
-
-  useEffect(() => {
-    async function test() {
-      try {
-        await setDoc(doc(db, "test", "ping"), {
-          message: "Firebase is connected",
-          timestamp: serverTimestamp(),
-        });
-
-        const snap = await getDoc(doc(db, "test", "ping"));
-        if (snap.exists()) {
-          setStatus("Connected - " + snap.data().message);
-        } else {
-          setStatus("Write succeeded but read failed");
-        }
-      } catch (error) {
-        setStatus(
-          "Error: " + (error instanceof Error ? error.message : String(error)),
-        );
-      }
-    }
-    test();
-  }, []);
+export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 18 }}>{status}</Text>
-    </View>
+    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <ThemedText type="title" style={styles.header}>
+          SnapDose
+        </ThemedText>
+        <GlucoseCard />
+        <RecentMealsCard />
+        <QuickActions />
+      </ScrollView>
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  header: {
+    marginBottom: 20,
+  },
+});
