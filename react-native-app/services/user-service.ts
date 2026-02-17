@@ -16,6 +16,10 @@ export async function saveOnboardingData(data: OnboardingData) {
   const currentYear = new Date().getFullYear();
   const birthYear = currentYear - data.age;
   const dateOfBirth = new Date(birthYear, 0, 1);
+  
+  // Convert height and weight for storage
+  const heightInCm = (data.heightFeet * 12 + data.heightInches) * 2.54;
+  const weightInKg = data.weight * 0.453592;
 
   const userData = {
     email: user.email || '',
@@ -26,6 +30,15 @@ export async function saveOnboardingData(data: OnboardingData) {
       diagnosisYear: 2024,
       glucoseUnit: 'mg/dL',
       insulinUnits: 'units',
+      height: {
+        feet: data.heightFeet,
+        inches: data.heightInches,
+        cm: Math.round(heightInCm),
+      },
+      weight: {
+        lbs: data.weight,
+        kg: Math.round(weightInKg * 10) / 10,
+      },
     },
     insulinSettings: {
       correctionFactor: data.correctionFactor,
