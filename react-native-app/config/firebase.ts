@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD-LF35aYV1PU6GeeWDSqcmOsOj0SqZYd8",
-  authDomain: "egr302-snapdose.firebaseapp.com",
-  projectId: "egr302-snapdose",
-  storageBucket: "egr302-snapdose.firebasestorage.app",
-  messagingSenderId: "1044774150297",
-  appId: "1:1044774150297:web:0f7bc4aa81b4cab7395808",
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
