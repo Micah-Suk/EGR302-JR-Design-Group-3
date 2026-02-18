@@ -1,22 +1,17 @@
 import { Drawer } from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { TouchableOpacity, View, StyleSheet } from "react-native";
+import { TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { router, usePathname } from "expo-router";
+import { logout } from "@/services/logout-service";
 
 const DRAWER_ITEMS = [
     { label: "Home", icon: "house.fill", path: "/", match: ["/"] },
-    {
-        label: "Edit Profile",
-        icon: "person.fill",
-        path: "/edit-profile",
-        match: ["/edit-profile"],
-    },
     {
         label: "Food Gallery",
         icon: "rectangle.grid.2x2",
@@ -38,17 +33,34 @@ function CustomDrawerContent(props: any) {
     const activeBg = colorScheme === "dark" ? "#1e1e1e" : "#f0f0f0";
     const pathname = usePathname();
 
+    const handleLogout = () => {
+        Alert.alert("Logout", "Are you sure you want to log out?", [
+            { text: "Cancel", style: "cancel" },
+            {
+                text: "Logout",
+                style: "destructive",
+                onPress: async () => await logout(),
+            },
+        ]);
+    };
+
     return (
         <ThemedView style={{ flex: 1 }}>
-            <DrawerContentScrollView {...props} scrollEnabled={false}>
+            <DrawerContentScrollView
+                {...props}
+                scrollEnabled={false}
+                contentContainerStyle={{ flexGrow: 1 }}
+            >
                 {DRAWER_ITEMS.map((item) => {
-                    const isActive = item.match.includes(pathname as any);
+                    const isActive = (item.match as readonly string[]).includes(
+                        pathname,
+                    );
                     return (
                         <TouchableOpacity
                             key={item.path}
                             onPress={() => {
                                 props.navigation.closeDrawer();
-                                router.navigate(item.path);
+                                router.navigate(item.path as any);
                             }}
                             style={[
                                 styles.item,
@@ -72,6 +84,15 @@ function CustomDrawerContent(props: any) {
                     );
                 })}
             </DrawerContentScrollView>
+
+            <ThemedView style={styles.footer}>
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={handleLogout}
+                >
+                    <ThemedText style={styles.logoutText}>Logout</ThemedText>
+                </TouchableOpacity>
+            </ThemedView>
         </ThemedView>
     );
 }
@@ -134,5 +155,23 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 15,
         fontWeight: "500",
+    },
+    footer: {
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 32,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: "#ccc",
+    },
+    logoutButton: {
+        backgroundColor: "#FF3B30",
+        borderRadius: 8,
+        paddingVertical: 12,
+        alignItems: "center",
+    },
+    logoutText: {
+        color: "#fff",
+        fontWeight: "600",
+        fontSize: 15,
     },
 });
