@@ -4,7 +4,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import ProgressBar from './progress-bar';
 
 interface OnboardingLayoutProps {
@@ -49,48 +49,67 @@ export default function OnboardingLayout({
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
-      <ThemedView style={styles.container}>
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} accentColor={accentColor} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <ThemedView style={styles.container}>
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} accentColor={accentColor} />
 
-        <View style={[styles.iconContainer, { backgroundColor: iconContainerColor }]}>
-          <Ionicons name={icon} size={40} color={iconColor} />
-        </View>
+            <View style={[styles.iconContainer, { backgroundColor: iconContainerColor }]}>
+              <Ionicons name={icon} size={40} color={iconColor} />
+            </View>
 
-        <ThemedText style={[styles.title, { color: titleColor }]}>{title}</ThemedText>
-        {subtitle && <ThemedText style={[styles.subtitle, { color: subtitleColor }]}>{subtitle}</ThemedText>}
+            <ThemedText style={[styles.title, { color: titleColor }]}>{title}</ThemedText>
+            {subtitle && <ThemedText style={[styles.subtitle, { color: subtitleColor }]}>{subtitle}</ThemedText>}
 
-        <View style={styles.content}>
-          {children}
-        </View>
+            <View style={styles.content}>
+              {children}
+            </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.backButton, { backgroundColor: backButtonColor }]}
-            onPress={handleBack}
-          >
-            <ThemedText style={[styles.backButtonText, { color: backButtonTextColor }]}>Back</ThemedText>
-          </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.backButton, { backgroundColor: backButtonColor }]}
+                onPress={handleBack}
+              >
+                <ThemedText style={[styles.backButtonText, { color: backButtonTextColor }]}>Back</ThemedText>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.nextButton,
-              { backgroundColor: accentColor },
-              !canProceed && styles.nextButtonDisabled,
-            ]}
-            onPress={onNext}
-            disabled={!canProceed}
-          >
-            <ThemedText style={styles.nextButtonText}>{nextButtonText} →</ThemedText>
-          </TouchableOpacity>
-        </View>
-      </ThemedView>
+              <TouchableOpacity
+                style={[
+                  styles.nextButton,
+                  { backgroundColor: accentColor },
+                  !canProceed && styles.nextButtonDisabled,
+                ]}
+                onPress={onNext}
+                disabled={!canProceed}
+              >
+                <ThemedText style={styles.nextButtonText}>{nextButtonText} →</ThemedText>
+              </TouchableOpacity>
+            </View>
+          </ThemedView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   container: {
     flex: 1,
@@ -123,6 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 20,
   },
   buttonContainer: {
     flexDirection: 'row',

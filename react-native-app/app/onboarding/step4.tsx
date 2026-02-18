@@ -38,6 +38,7 @@ export default function Step4Screen() {
           value={weight}
           onIncrement={() => setWeight(w => Math.min(w + 1, 500))}
           onDecrement={() => setWeight(w => Math.max(w - 1, 50))}
+          onChange={(val) => setWeight(Math.max(Math.min(val, 500), 50))}
           label="lbs"
           min={50}
           max={500}

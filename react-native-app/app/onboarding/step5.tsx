@@ -38,6 +38,7 @@ export default function Step5Screen() {
           value={age}
           onIncrement={() => setAge(a => Math.min(a + 1, 120))}
           onDecrement={() => setAge(a => Math.max(a - 1, 1))}
+          onChange={(val) => setAge(Math.max(Math.min(val, 120), 1))}
           label="years"
           min={1}
           max={120}

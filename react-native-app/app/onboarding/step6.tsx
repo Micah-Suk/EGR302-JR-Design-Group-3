@@ -75,6 +75,7 @@ export default function Step6Screen() {
               value={carbRatio}
               onIncrement={() => setCarbRatio(c => Math.min(c + 1, 50))}
               onDecrement={() => setCarbRatio(c => Math.max(c - 1, 1))}
+              onChange={(val) => setCarbRatio(Math.max(Math.min(val, 50), 1))}
               label="carb ratio"
               min={1}
               max={50}
@@ -84,6 +85,7 @@ export default function Step6Screen() {
               value={correctionFactor}
               onIncrement={() => setCorrectionFactor(f => Math.min(f + 1, 200))}
               onDecrement={() => setCorrectionFactor(f => Math.max(f - 1, 10))}
+              onChange={(val) => setCorrectionFactor(Math.max(Math.min(val, 200), 10))}
               label="correction factor"
               min={10}
               max={200}

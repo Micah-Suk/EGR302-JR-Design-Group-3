@@ -1,7 +1,6 @@
 import NumberInput from '@/components/onboarding/number-input';
 import OnboardingLayout from '@/components/onboarding/onboarding-layout';
 import { ThemedView } from '@/components/themed-view';
-import { useThemeColor } from '@/hooks/use-theme-color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +13,6 @@ export default function Step3Screen() {
   const router = useRouter();
   const [accentColor, setAccentColor] = useState('#EF4444');
   const insets = useSafeAreaInsets();
-  const separatorColor = useThemeColor({ light: '#555', dark: '#aaa' }, 'text');
 
   useEffect(() => {
     AsyncStorage.getItem('onboarding_accentColor').then((color) => {
@@ -46,6 +44,7 @@ export default function Step3Screen() {
               value={feet}
               onIncrement={() => setFeet(f => Math.min(f + 1, 8))}
               onDecrement={() => setFeet(f => Math.max(f - 1, 3))}
+              onChange={(val) => setFeet(Math.max(Math.min(val, 8), 3))}
               label="feet"
               min={3}
               max={8}
@@ -54,6 +53,7 @@ export default function Step3Screen() {
               value={inches}
               onIncrement={() => setInches(i => (i + 1) % 12)}
               onDecrement={() => setInches(i => (i - 1 + 12) % 12)}
+              onChange={(val) => setInches(val % 12)}
               label="inches"
             />
           </View>
