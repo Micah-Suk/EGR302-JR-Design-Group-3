@@ -1,8 +1,80 @@
 import { Drawer } from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { router, usePathname } from "expo-router";
+
+const DRAWER_ITEMS = [
+    { label: "Home", icon: "house.fill", path: "/", match: ["/"] },
+    {
+        label: "Edit Profile",
+        icon: "person.fill",
+        path: "/edit-profile",
+        match: ["/edit-profile"],
+    },
+    {
+        label: "Food Gallery",
+        icon: "rectangle.grid.2x2",
+        path: "/food-gallery",
+        match: ["/food-gallery"],
+    },
+    {
+        label: "Settings",
+        icon: "gearshape.fill",
+        path: "/settings",
+        match: ["/settings"],
+    },
+] as const;
+
+function CustomDrawerContent(props: any) {
+    const colorScheme = useColorScheme();
+    const tint = Colors[colorScheme ?? "light"].tint;
+    const iconDefault = Colors[colorScheme ?? "light"].icon;
+    const activeBg = colorScheme === "dark" ? "#1e1e1e" : "#f0f0f0";
+    const pathname = usePathname();
+
+    return (
+        <ThemedView style={{ flex: 1 }}>
+            <DrawerContentScrollView {...props} scrollEnabled={false}>
+                {DRAWER_ITEMS.map((item) => {
+                    const isActive = item.match.includes(pathname as any);
+                    return (
+                        <TouchableOpacity
+                            key={item.path}
+                            onPress={() => {
+                                props.navigation.closeDrawer();
+                                router.navigate(item.path);
+                            }}
+                            style={[
+                                styles.item,
+                                isActive && { backgroundColor: activeBg },
+                            ]}
+                        >
+                            <IconSymbol
+                                name={item.icon}
+                                size={22}
+                                color={isActive ? tint : iconDefault}
+                            />
+                            <ThemedText
+                                style={[
+                                    styles.label,
+                                    isActive && { color: tint },
+                                ]}
+                            >
+                                {item.label}
+                            </ThemedText>
+                        </TouchableOpacity>
+                    );
+                })}
+            </DrawerContentScrollView>
+        </ThemedView>
+    );
+}
 
 export default function DrawerLayout() {
     const colorScheme = useColorScheme();
@@ -12,6 +84,7 @@ export default function DrawerLayout() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Drawer
+                drawerContent={(props) => <CustomDrawerContent {...props} />}
                 screenOptions={{
                     drawerActiveTintColor: tint,
                     drawerStyle: { backgroundColor },
@@ -24,28 +97,6 @@ export default function DrawerLayout() {
                         headerShown: true,
                         title: "SnapDose",
                         drawerLabel: "Home",
-                        drawerIcon: ({ color }) => (
-                            <IconSymbol
-                                name="house.fill"
-                                size={22}
-                                color={color}
-                            />
-                        ),
-                    }}
-                />
-                <Drawer.Screen
-                    name="edit-profile"
-                    options={{
-                        headerShown: true,
-                        title: "Edit Profile",
-                        drawerLabel: "Edit Profile",
-                        drawerIcon: ({ color }) => (
-                            <IconSymbol
-                                name="person.fill"
-                                size={22}
-                                color={color}
-                            />
-                        ),
                     }}
                 />
                 <Drawer.Screen
@@ -54,13 +105,6 @@ export default function DrawerLayout() {
                         headerShown: true,
                         title: "Food Gallery",
                         drawerLabel: "Food Gallery",
-                        drawerIcon: ({ color }) => (
-                            <IconSymbol
-                                name="rectangle.grid.2x2"
-                                size={22}
-                                color={color}
-                            />
-                        ),
                     }}
                 />
                 <Drawer.Screen
@@ -69,16 +113,26 @@ export default function DrawerLayout() {
                         headerShown: true,
                         title: "Settings",
                         drawerLabel: "Settings",
-                        drawerIcon: ({ color }) => (
-                            <IconSymbol
-                                name="gearshape.fill"
-                                size={22}
-                                color={color}
-                            />
-                        ),
                     }}
                 />
             </Drawer>
         </GestureHandlerRootView>
     );
 }
+
+const styles = StyleSheet.create({
+    item: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        marginHorizontal: 8,
+        marginVertical: 2,
+        gap: 14,
+    },
+    label: {
+        fontSize: 15,
+        fontWeight: "500",
+    },
+});
