@@ -90,16 +90,24 @@ headerRight: () => <LogoutButton />,
   
                     ),
                 }}
-    />
-    <Tabs.Screen
-    name="settings"
-    options={{
-        title: "Settings",
-        tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="gearshape.fill" color={color} />
-        ),
-    }}
-/>
+            />
+            <Tabs.Screen
+              name="settings"
+              options={{
+                  title: "Settings",
+                  tabBarIcon: ({ color }) => (
+                      <IconSymbol size={28} name="gearshape.fill" color={color} />
+                  ),
+              }}
+            />
+            />
+            <Tabs.Screen
+                name="food-gallery"
+                options={{
+                    title: "Food Gallery",
+                    href: null, // hides from tab bar, keeps bottom nav when on this screen
+                }}
+            />
         </Tabs>
     );
 }
