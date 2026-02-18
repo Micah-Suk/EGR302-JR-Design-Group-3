@@ -88,7 +88,7 @@ const FoodLogScreen = () => {
 
       {/* ── Empty State ── */}
       <View style={styles.emptyState}>
-        <Text style={styles.emptyIcon}>🍽</Text>
+        <Text style={styles.emptyIcon}></Text>
         <Text style={styles.emptyTitle}>No meals logged yet</Text>
         <Text style={styles.emptySubtitle}>
           Tap the Scan button to log your first meal. Your past meals will appear here.
