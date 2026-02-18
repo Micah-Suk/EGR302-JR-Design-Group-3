@@ -1,5 +1,6 @@
 import NumberInput from '@/components/onboarding/number-input';
 import OnboardingLayout from '@/components/onboarding/onboarding-layout';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { saveOnboardingData } from '@/services/user-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -11,6 +12,7 @@ export default function Step6Screen() {
   const [correctionFactor, setCorrectionFactor] = useState(50);
   const router = useRouter();
   const [accentColor, setAccentColor] = useState('#EF4444');
+  const separatorColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
 
   useEffect(() => {
     AsyncStorage.getItem('onboarding_accentColor').then((color) => {
@@ -73,15 +75,17 @@ export default function Step6Screen() {
               value={carbRatio}
               onIncrement={() => setCarbRatio(c => Math.min(c + 1, 50))}
               onDecrement={() => setCarbRatio(c => Math.max(c - 1, 1))}
+              onChange={(val) => setCarbRatio(Math.max(Math.min(val, 50), 1))}
               label="carb ratio"
               min={1}
               max={50}
             />
-            <Text style={styles.separator}>:</Text>
+            <Text style={[styles.separator, { color: separatorColor }]}>---</Text>
             <NumberInput
               value={correctionFactor}
               onIncrement={() => setCorrectionFactor(f => Math.min(f + 1, 200))}
               onDecrement={() => setCorrectionFactor(f => Math.max(f - 1, 10))}
+              onChange={(val) => setCorrectionFactor(Math.max(Math.min(val, 200), 10))}
               label="correction factor"
               min={10}
               max={200}
@@ -99,22 +103,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   settingsCard: {
-    backgroundColor: '#1A1A1A',
     borderRadius: 20,
-    padding: 30,
     width: '100%',
-    borderWidth: 1,
-    borderColor: '#333',
   },
   inputRow: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 20,
+    gap: 0,
   },
   separator: {
     fontSize: 48,
-    color: '#555',
     fontWeight: '300',
+    marginVertical: -20,
   },
 });

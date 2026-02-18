@@ -1,7 +1,10 @@
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import ProgressBar from './progress-bar';
 
 interface OnboardingLayoutProps {
@@ -30,6 +33,13 @@ export default function OnboardingLayout({
   accentColor,
 }: OnboardingLayoutProps) {
   const router = useRouter();
+  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
+  const iconContainerColor = useThemeColor({ light: '#F0F0F0', dark: '#1A1A1A' }, 'background');
+  const iconColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+  const titleColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+  const subtitleColor = useThemeColor({ light: '#555555', dark: '#888888' }, 'text');
+  const backButtonColor = useThemeColor({ light: '#E0E0E0', dark: '#2A2A2A' }, 'background');
+  const backButtonTextColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -38,54 +48,71 @@ export default function OnboardingLayout({
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} accentColor={accentColor} />
-        
-        <View style={styles.iconContainer}>
-          <Ionicons name={icon} size={40} color="#FFF" />
-        </View>
-        
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-        
-        <View style={styles.content}>
-          {children}
-        </View>
-        
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={[
-              styles.nextButton,
-              { backgroundColor: accentColor },
-              !canProceed && styles.nextButtonDisabled
-            ]}
-            onPress={onNext}
-            disabled={!canProceed}
-          >
-            <Text style={styles.nextButtonText}>{nextButtonText} →</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <ThemedView style={styles.container}>
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} accentColor={accentColor} />
+
+            <View style={[styles.iconContainer, { backgroundColor: iconContainerColor }]}>
+              <Ionicons name={icon} size={40} color={iconColor} />
+            </View>
+
+            <ThemedText style={[styles.title, { color: titleColor }]}>{title}</ThemedText>
+            {subtitle && <ThemedText style={[styles.subtitle, { color: subtitleColor }]}>{subtitle}</ThemedText>}
+
+            <View style={styles.content}>
+              {children}
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.backButton, { backgroundColor: backButtonColor }]}
+                onPress={handleBack}
+              >
+                <ThemedText style={[styles.backButtonText, { color: backButtonTextColor }]}>Back</ThemedText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.nextButton,
+                  { backgroundColor: accentColor },
+                  !canProceed && styles.nextButtonDisabled,
+                ]}
+                onPress={onNext}
+                disabled={!canProceed}
+              >
+                <ThemedText style={styles.nextButtonText}>{nextButtonText} →</ThemedText>
+              </TouchableOpacity>
+            </View>
+          </ThemedView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: '#000',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   container: {
     flex: 1,
-    backgroundColor: '#000',
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 40,
@@ -94,7 +121,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 20,
-    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -103,13 +129,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FFF',
     textAlign: 'center',
     marginBottom: 8,
+    lineHeight: 40,
   },
   subtitle: {
     fontSize: 16,
-    color: '#888',
     textAlign: 'center',
     marginBottom: 40,
   },
@@ -117,6 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -127,14 +153,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#2A2A2A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFF',
   },
   nextButton: {
     flex: 2,
