@@ -10,14 +10,11 @@ export default function HomeScreen() {
     const insets = useSafeAreaInsets();
 
     return (
-        <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+        <ThemedView style={[styles.container]}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                <ThemedText type="title" style={styles.header}>
-                    SnapDose
-                </ThemedText>
                 <GlucoseCard />
                 <RecentMealsCard />
                 <QuickActions />
