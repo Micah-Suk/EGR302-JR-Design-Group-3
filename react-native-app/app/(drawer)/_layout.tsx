@@ -56,7 +56,7 @@ export default function DrawerLayout() {
                         drawerLabel: "Food Gallery",
                         drawerIcon: ({ color }) => (
                             <IconSymbol
-                                name="photo.on.rectangle"
+                                name="rectangle.grid.2x2"
                                 size={22}
                                 color={color}
                             />
