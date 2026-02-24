@@ -27,6 +27,7 @@ functions.http("dexcomAuth", async (req, res) => {
   if (path === "/callback") return handleCallback(req, res);
   if (path === "/status") return handleStatus(req, res);
   if (path === "/egvs") return handleEgvs(req, res);
+  if (path === "/latest") return handleLatest(req, res);
 
   res.status(404).json({ error: "Not found" });
 });
@@ -154,6 +155,68 @@ async function handleEgvs(req, res) {
     res.json(data);
   } catch (err) {
     console.error("EGV fetch error:", err);
+    if (err.message === "Dexcom not connected") {
+      return res.status(401).json({ error: "Dexcom not connected" });
+    }
+    res.status(500).json({ error: "Internal error fetching glucose data" });
+  }
+}
+
+async function handleLatest(req, res) {
+  const { userId } = req.query;
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
+
+  try {
+    const accessToken = await getValidAccessToken(userId);
+
+    const rangeResponse = await fetch(
+      `${DEXCOM_BASE_URL}/v3/users/self/dataRange`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    if (!rangeResponse.ok) {
+      const errorText = await rangeResponse.text();
+      console.error("Dexcom dataRange failed:", errorText);
+      return res
+        .status(rangeResponse.status)
+        .json({ error: "Failed to fetch data range" });
+    }
+
+    const rangeData = await rangeResponse.json();
+    const egvEnd = rangeData.egvs?.end?.systemTime;
+
+    if (!egvEnd) {
+      return res.json({ records: [], latest: null });
+    }
+
+    const end = new Date(egvEnd);
+    const start = new Date(end.getTime() - 3 * 60 * 60 * 1000);
+
+    const startDate = start.toISOString().replace(".000Z", "");
+    const endDate = end.toISOString().replace(".000Z", "");
+
+    const egvResponse = await fetch(
+      `${DEXCOM_BASE_URL}/v3/users/self/egvs?startDate=${startDate}&endDate=${endDate}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    if (!egvResponse.ok) {
+      const errorText = await egvResponse.text();
+      console.error("Dexcom EGV fetch failed:", errorText);
+      return res
+        .status(egvResponse.status)
+        .json({ error: "Failed to fetch glucose data" });
+    }
+
+    const data = await egvResponse.json();
+    const records = data.records || [];
+    const latest = records.length > 0 ? records[records.length - 1] : null;
+
+    res.json({ records, latest });
+  } catch (err) {
+    console.error("Latest fetch error:", err);
     if (err.message === "Dexcom not connected") {
       return res.status(401).json({ error: "Dexcom not connected" });
     }
